@@ -26,7 +26,6 @@ func Init(dbFile string) error {
 
 	db = connect
 
-	// ВСЕГДА выполняем schema, потому что она безопасна (IF NOT EXISTS)
 	if _, err := db.Exec(schema); err != nil {
 		db.Close()
 		return err

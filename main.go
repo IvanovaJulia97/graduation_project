@@ -2,6 +2,7 @@ package main
 
 import (
 	"graduation_project/db"
+	"graduation_project/pkg"
 	"graduation_project/server"
 	"log"
 
@@ -15,6 +16,8 @@ func main() {
 	}
 
 	log.Println("Успешное подключение к БД")
+
+	pkg.Init()
 
 	server.MyServer()
 }
