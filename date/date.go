@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const formatDate = "20060102"
+const FormatDate = "20060102"
 
 // функция возвращает true , если первая дата больше второй
 func afterNow(date, now time.Time) bool {
@@ -25,7 +25,7 @@ func lastDayOfMonth(t time.Time) time.Time {
 func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 
 	//парсинг даты
-	dateStart, err := time.Parse(formatDate, dstart)
+	dateStart, err := time.Parse(FormatDate, dstart)
 	if err != nil {
 		return "", fmt.Errorf("ошибка при парсинге даты: %w", err)
 	}
@@ -68,7 +68,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 
 		next = next.AddDate(0, 0, (periodPassed+1)*period)
 
-		return next.Format(formatDate), nil
+		return next.Format(FormatDate), nil
 
 	case "y":
 		if len(strRepeat) != 1 {
@@ -91,7 +91,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 			}
 
 			if afterNow(normTime(next), now) {
-				return next.Format(formatDate), nil
+				return next.Format(FormatDate), nil
 			}
 		}
 
