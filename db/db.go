@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-var db *sql.DB
+var DB *sql.DB
 
 const schema = `
 CREATE TABLE IF NOT EXISTS scheduler (
@@ -24,10 +24,10 @@ func Init(dbFile string) error {
 		return err
 	}
 
-	db = connect
+	DB = connect
 
-	if _, err := db.Exec(schema); err != nil {
-		db.Close()
+	if _, err := DB.Exec(schema); err != nil {
+		DB.Close()
 		return err
 	}
 
@@ -35,5 +35,5 @@ func Init(dbFile string) error {
 }
 
 func Get() *sql.DB {
-	return db
+	return DB
 }

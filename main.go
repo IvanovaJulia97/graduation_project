@@ -2,7 +2,7 @@ package main
 
 import (
 	"graduation_project/db"
-	"graduation_project/pkg"
+	pkg "graduation_project/rout"
 	"graduation_project/server"
 	"log"
 
