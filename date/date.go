@@ -11,7 +11,7 @@ import (
 const FormatDate = "20060102"
 
 // функция возвращает true , если первая дата больше второй
-func afterNow(date, now time.Time) bool {
+func AfterNow(date, now time.Time) bool {
 	date1 := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 	date2 := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	return date1.After(date2)
@@ -90,7 +90,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 				next = time.Date(origin.Year(), origin.Month(), origin.Day(), 0, 0, 0, 0, time.UTC)
 			}
 
-			if afterNow(normTime(next), now) {
+			if AfterNow(normTime(next), now) {
 				return next.Format(FormatDate), nil
 			}
 		}
