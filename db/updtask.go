@@ -40,7 +40,7 @@ func UpdateDate(next string, id string) error {
 	}
 
 	if count == 0 {
-		return fmt.Errorf("задача с id = %s не найдена, обновление невозможно")
+		return fmt.Errorf("задача с id = %s не найдена, обновление невозможно", id)
 	}
 	return nil
 
