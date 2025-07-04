@@ -12,7 +12,7 @@ import (
 func main() {
 	err := db.Init("scheduler.db")
 	if err != nil {
-		log.Fatalf("Ошибка инициализации БД: %v", err)
+		log.Fatalf("Ошибка в подключении к БД: %v", err)
 	}
 
 	log.Println("Успешное подключение к БД")
