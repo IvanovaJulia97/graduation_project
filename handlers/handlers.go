@@ -49,6 +49,18 @@ func TaskHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		WriteJSON(w, map[string]string{})
+	case http.MethodDelete:
+		id := r.URL.Query().Get("id")
+		if id == "" {
+			WriteJSON(w, map[string]string{"error": "не указан id задачи"})
+			return
+		}
+		err := db.DeleteTask(id)
+		if err != nil {
+			WriteJSON(w, map[string]string{"error": "ошибка при удалении задачи"})
+			return
+		}
+		WriteJSON(w, map[string]string{})
 
 	default:
 		w.WriteHeader(http.StatusBadRequest)
@@ -84,7 +96,11 @@ func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	//w.Write([]byte(res))
-	WriteJSON(w, map[string]string{"next_date": res})
+	// w.Write([]byte(res))
+	// WriteJSON(w, map[string]string{"next_date": res})
+	_, err = w.Write([]byte(res))
+	if err != nil {
+		http.Error(w, "Ошибка записи ответа", http.StatusInternalServerError)
+	}
 
 }

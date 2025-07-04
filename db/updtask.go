@@ -25,3 +25,23 @@ func UpdateTask(task *Task) error {
 	return nil
 
 }
+
+func UpdateDate(next string, id string) error {
+	req := `UPDATE scheduler SET date = ? WHERE id = ?`
+
+	res, err := DB.Exec(req, next, id)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return fmt.Errorf("задача с id = %s не найдена, обновление невозможно", id)
+	}
+	return nil
+
+}
