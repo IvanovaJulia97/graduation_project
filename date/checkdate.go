@@ -1,24 +1,15 @@
-package handlers
+package date
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"graduation_project/date"
 	"graduation_project/db"
-	"graduation_project/tasks"
-	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func WriteJSON(w http.ResponseWriter, data any) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(data)
-}
-
-func CheckDate(task *tasks.Task) error {
+// проверка дат
+func CheckDate(task *db.Task) error {
 	now := time.Now()
 	today := now.Truncate(24 * time.Hour)
 
@@ -31,7 +22,7 @@ func CheckDate(task *tasks.Task) error {
 	}
 
 	if task.Date == "" {
-		task.Date = now.Format(date.FormatDate)
+		task.Date = now.Format(FormatDate)
 	}
 
 	if len(task.Date) != 8 {
@@ -44,8 +35,8 @@ func CheckDate(task *tasks.Task) error {
 		}
 	}
 
-	t, err := time.Parse(date.FormatDate, task.Date)
-	if err != nil || t.Format(date.FormatDate) != task.Date {
+	t, err := time.Parse(FormatDate, task.Date)
+	if err != nil || t.Format(FormatDate) != task.Date {
 		return errors.New("некорректный формат даты")
 	}
 
@@ -75,7 +66,7 @@ func CheckDate(task *tasks.Task) error {
 		}
 
 		if t.Before(today) {
-			next, err := date.NextDate(now, task.Date, task.Repeat)
+			next, err := NextDate(now, task.Date, task.Repeat)
 			if err != nil {
 				return err
 			}
@@ -83,47 +74,9 @@ func CheckDate(task *tasks.Task) error {
 		}
 	} else {
 		if t.Before(today) {
-			task.Date = now.Format(date.FormatDate)
+			task.Date = now.Format(FormatDate)
 		}
 	}
 	return nil
 
-}
-
-func AddTaskHandler(w http.ResponseWriter, r *http.Request) {
-	var task tasks.Task
-
-	//десериализация JSON
-	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
-		WriteJSON(w, map[string]string{"error": "в преобразовании JSON"})
-		return
-	}
-
-	//проверка дат
-	if err := CheckDate(&task); err != nil {
-		WriteJSON(w, map[string]string{"error": err.Error()})
-		return
-	}
-
-	//проверка добавление задачи
-	id, err := tasks.AddTask(db.DB, &task)
-	if err != nil {
-		WriteJSON(w, map[string]string{"error": err.Error()})
-		return
-	}
-
-	fmt.Printf("DEBUG: Получена задача: %+v\n", task)
-
-	WriteJSON(w, map[string]string{"id": strconv.FormatInt(id, 10)})
-
-}
-
-func TaskHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		AddTaskHandler(w, r)
-	default:
-		http.Error(w, "Данные запрос не поддерживается", http.StatusBadRequest)
-
-	}
 }
