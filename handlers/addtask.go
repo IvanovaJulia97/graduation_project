@@ -20,20 +20,20 @@ func AddTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	//десериализация JSON
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
-		WriteJSON(w, map[string]string{"error": "в преобразовании JSON"})
+		WriteJSON(w, map[string]string{"error": "ошибка при преобразовании JSON"})
 		return
 	}
 
 	//проверка дат
 	if err := date.CheckDate(&task); err != nil {
-		WriteJSON(w, map[string]string{"error": err.Error()})
+		WriteJSON(w, map[string]string{"error": "некорректная дата"})
 		return
 	}
 
 	//проверка добавление задачи
 	id, err := db.AddTask(db.DB, &task)
 	if err != nil {
-		WriteJSON(w, map[string]string{"error": err.Error()})
+		WriteJSON(w, map[string]string{"error": "ошибка при добавлении задачи"})
 		return
 	}
 

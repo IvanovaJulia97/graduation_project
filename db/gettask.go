@@ -1,6 +1,9 @@
 package db
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 func SortTask(limit int) ([]*Task, error) {
 	str, err := DB.Query(`
@@ -38,5 +41,27 @@ func SortTask(limit int) ([]*Task, error) {
 	}
 
 	return tasks, nil
+
+}
+
+func GetTasks(id string) (*Task, error) {
+	req := `
+		SELECT id, date, title, comment, repeat
+		FROM scheduler
+		WHERE id = ?`
+
+	var t Task
+	err := DB.QueryRow(req, id).Scan(&t.ID,
+		&t.Date,
+		&t.Title,
+		&t.Comment,
+		&t.Repeat)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("задача с таким id не найдена")
+		}
+		return nil, err
+	}
+	return &t, nil
 
 }
