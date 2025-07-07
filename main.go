@@ -10,6 +10,11 @@ import (
 )
 
 func main() {
+	// err1 := godotenv.Load()
+	// if err1 != nil {
+	// 	log.Println("Ошибка загрузки .env файда")
+	// }
+
 	err := db.Init("scheduler.db")
 	if err != nil {
 		log.Fatalf("Ошибка в подключении к БД: %v", err)

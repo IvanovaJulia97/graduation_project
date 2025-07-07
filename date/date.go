@@ -108,6 +108,100 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 			}
 		}
 
+	case "w":
+		dayStr := strings.Split(strRepeat[1], ",")
+		days := make([]int, 0, len(dayStr))
+		for _, d := range dayStr {
+			dayNum, err := strconv.Atoi(d)
+			if err != nil || dayNum < 1 || dayNum > 7 {
+				return "", errors.New("дни недель должны быть с числами от 1 до 7")
+			}
+			days = append(days, dayNum)
+		}
+
+		weekday := int(now.Weekday())
+		if weekday == 0 {
+			weekday = 7
+		}
+
+		minDays := 8
+		for _, d := range days {
+			diff := d - weekday
+			if diff < 0 {
+				diff += 7
+			}
+			if diff < minDays {
+				minDays = diff
+			}
+		}
+
+		next := now.AddDate(0, 0, minDays)
+		return next.Format(FormatDate), nil
+	case "m":
+		if len(strRepeat) < 2 || len(strRepeat) > 3 {
+			return "", errors.New("некорректно указано правило повторения <m>")
+		}
+		dayStr := strings.Split(strRepeat[1], ",")
+		days := make([]int, 0, len(dayStr))
+		for _, d := range dayStr {
+			dayNum, err := strconv.Atoi(d)
+			if err != nil || (dayNum < -2 || dayNum == 0 || dayNum > 31) {
+				return "", errors.New("дни месяца должны быть от 1 до 31 или -1 или -2")
+			}
+			days = append(days, dayNum)
+		}
+
+		var months []int
+		if len(strRepeat) == 3 {
+			monthSTr := strings.Split(strRepeat[2], ",")
+			months = make([]int, 0, len(monthSTr))
+			for _, m := range monthSTr {
+				monthNum, err := strconv.Atoi(m)
+				if err != nil || monthNum < 1 || monthNum > 12 {
+					return "", errors.New("количество месяцев должно быть от 1 до 12")
+				}
+				months = append(months, monthNum)
+			}
+		}
+
+		for i := 0; i < 400; i++ {
+			cur := now.AddDate(0, 0, i)
+			month := int(cur.Month())
+			day := cur.Day()
+
+			if len(months) > 0 {
+				foundMonth := false
+				for _, m := range months {
+					if m == month {
+						foundMonth = true
+					}
+				}
+				if !foundMonth {
+					continue
+				}
+			}
+			lastDay := lastDayOfMonth(cur).Day()
+			secondLastDay := lastDay - 1
+
+			for _, d := range days {
+				switch {
+				case d > 0:
+					if day == d {
+						return cur.Format(FormatDate), nil
+					}
+				case d == -1:
+					if day == lastDay {
+						return cur.Format(FormatDate), nil
+					}
+				case d == -2:
+					if day == secondLastDay {
+						return cur.Format(FormatDate), nil
+					}
+				}
+			}
+		}
+		return "", errors.New("ненайдена дата для повторения")
+
 	default:
 		return "", errors.New("переданный формат даты не поддерживается")
 	}
