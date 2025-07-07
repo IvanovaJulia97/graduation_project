@@ -10,4 +10,5 @@ func Init() {
 	http.HandleFunc("/api/task", handlers.TaskHandler)
 	http.HandleFunc("/api/tasks", handlers.GetTasksHandlers)
 	http.HandleFunc("/api/task/done", handlers.DoneTaskHandler)
+
 }
